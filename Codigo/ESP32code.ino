@@ -1,68 +1,90 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
-#include <DHT.h>  // Adafruit DHT sensor library
+#include <DHT.h>
 
-// ========================= Configurações - variáveis editáveis =========================
-const char* default_SSID = "Lifonix.IOT";
-const char* default_PASSWORD = "lifonixforthefuture";
-const char* default_BROKER_MQTT = "54.172.140.81";
-const int   default_BROKER_PORT = 1981;
+// ========================= Configurações de Rede e Broker =========================
+const char* WIFI_SSID = "Lifonix.IOT";
+const char* WIFI_PASSWORD = "lifonixforthefuture";
+const char* BROKER_MQTT = "54.172.140.81";   // IP do broker (pode usar Mosquitto público)
+const int   BROKER_PORT = 1981;
+const char* MQTT_ID = "lifonix_workwell_esp32";
 
-// ========================= Configurações - Dispositivo =========================
-const char* default_TOPICO_SUBSCRIBE = "/TEF/device001/cmd";    
-const char* default_TOPICO_PUBLISH_1 = "/TEF/device001/attrs";  
-const char* default_TOPICO_PUBLISH_2 = "/TEF/device001/attrs/p";   // Luminosidade (%)
-const char* default_TOPICO_PUBLISH_H = "/TEF/device001/attrs/h";   // Umidade do ar (%)
-const char* default_TOPICO_PUBLISH_T = "/TEF/device001/attrs/t";   // Temperatura (°C)
-const char* default_TOPICO_PUBLISH_SOIL = "/TEF/device001/attrs/soil"; // Umidade do solo (%)
-const char* default_TOPICO_PUBLISH_AIR = "/TEF/device001/attrs/air";   // Qualidade do ar (AQI)
-const char* default_ID_MQTT = "fiware_001";                     
-const char* topicPrefix = "device001";                          
-const char* localizacao = "São Paulo";
+// ========================= Tópicos MQTT =========================
+const char* TOPICO_PUBLISH_STATUS = "/lifonix/workwell/status";
+const char* TOPICO_PUBLISH_ENV = "/lifonix/workwell/env";
+const char* TOPICO_SUBSCRIBE = "/lifonix/workwell/cmd";  // comandos remotos opcionais
 
-// ========================= Configurações DHT =========================
-#define DHTPIN 4      
-#define DHTTYPE DHT11  
+// ========================= Configurações de Sensores =========================
+#define DHTPIN 4
+#define DHTTYPE DHT22
+#define LDR_PIN 34
+#define NOISE_PIN 35      // Potenciômetro simulando ruído
+#define BUTTON_PIN 19     // Botão para pausa manual
+#define LED_R 16
+#define LED_G 17
+#define LED_B 18
+
 DHT dht(DHTPIN, DHTTYPE);
 
-// ========================= Sensores analógicos extras =========================
-const int LDR_PIN = 34;   // Luminosidade
-const int SOIL_PIN = 35;  // Umidade do solo
-const int AIR_PIN = 32;   // Qualidade do ar 
-
-// ========================= Variáveis =========================
+// ========================= Objetos Globais =========================
 WiFiClient espClient;
 PubSubClient MQTT(espClient);
 
-// ========================= Protótipos =========================
-void initSerial();
-void initWiFi();
-void initMQTT();
-void reconectWiFi();
-void reconnectMQTT();
-void mqtt_callback(char* topic, byte* payload, unsigned int length);
-void VerificaConexoesWiFIEMQTT();
-
-void handleLuminosity();
-void handleHumidity();
-void handleTemperature();
-void handleSoilHumidity();
-void handleAirQuality();
-
-// ========================= Inicializações =========================
-void initSerial() { Serial.begin(115200); }
+// ========================= Funções de Inicialização =========================
+void initSerial() {
+  Serial.begin(115200);
+  Serial.println("\n=== Iniciando Lifonix WorkWell ===");
+}
 
 void initWiFi() {
-  delay(10);
-  Serial.println("------ Conexao WI-FI ------");
-  Serial.print("Conectando-se na rede: ");
-  Serial.println(default_SSID);
-  reconectWiFi();
+  Serial.print("Conectando ao WiFi: ");
+  Serial.println(WIFI_SSID);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\n✅ Wi-Fi conectado!");
+  Serial.print("IP local: ");
+  Serial.println(WiFi.localIP());
 }
 
 void initMQTT() {
-  MQTT.setServer(default_BROKER_MQTT, default_BROKER_PORT);
+  MQTT.setServer(BROKER_MQTT, BROKER_PORT);
   MQTT.setCallback(mqtt_callback);
+}
+
+void mqtt_callback(char* topic, byte* payload, unsigned int length) {
+  Serial.print("\n📩 Comando recebido [");
+  Serial.print(topic);
+  Serial.print("]: ");
+  for (unsigned int i = 0; i < length; i++) {
+    Serial.print((char)payload[i]);
+  }
+  Serial.println();
+}
+
+// ========================= Reconexão Automática =========================
+void reconnectMQTT() {
+  while (!MQTT.connected()) {
+    Serial.print("🔄 Conectando ao Broker MQTT...");
+    if (MQTT.connect(MQTT_ID)) {
+      Serial.println(" conectado!");
+      MQTT.subscribe(TOPICO_SUBSCRIBE);
+    } else {
+      Serial.print("❌ Falhou, rc=");
+      Serial.print(MQTT.state());
+      Serial.println(" Tentando novamente em 5s...");
+      delay(5000);
+    }
+  }
+}
+
+// ========================= LED RGB =========================
+void setColor(int r, int g, int b) {
+  analogWrite(LED_R, r);
+  analogWrite(LED_G, g);
+  analogWrite(LED_B, b);
 }
 
 // ========================= Setup =========================
@@ -70,134 +92,66 @@ void setup() {
   initSerial();
   initWiFi();
   initMQTT();
-  dht.begin(); 
-  delay(2000);
-  Serial.println("✅ Sistema iniciado e pronto para enviar dados MQTT!");
+  dht.begin();
+
+  pinMode(LDR_PIN, INPUT);
+  pinMode(NOISE_PIN, INPUT);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  pinMode(LED_R, OUTPUT);
+  pinMode(LED_G, OUTPUT);
+  pinMode(LED_B, OUTPUT);
+
+  Serial.println("✅ Sistema Lifonix WorkWell iniciado!");
 }
 
-// ========================= Loop =========================
+// ========================= Loop Principal =========================
 void loop() {
-  VerificaConexoesWiFIEMQTT();
-
-  handleLuminosity();
-  handleHumidity();
-  handleTemperature();
-  handleSoilHumidity();
-  handleAirQuality();
-
-  MQTT.loop();
-  delay(3000); // intervalo entre leituras
-}
-
-// ========================= Wi-Fi =========================
-void reconectWiFi() {
-  if (WiFi.status() == WL_CONNECTED) return;
-  WiFi.begin(default_SSID, default_PASSWORD);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(300);
-    Serial.print(".");
-  }
-  Serial.println("\n✅ Wi-Fi conectado com sucesso!");
-  Serial.print("IP Local: ");
-  Serial.println(WiFi.localIP());
-}
-
-// ========================= Callback MQTT =========================
-void mqtt_callback(char* topic, byte* payload, unsigned int length) {
-  Serial.print("📩 Mensagem recebida no tópico ");
-  Serial.print(topic);
-  Serial.print(": ");
-  for (unsigned int i = 0; i < length; i++) {
-    Serial.print((char)payload[i]);
-  }
-  Serial.println();
-}
-
-// ========================= Conexões =========================
-void VerificaConexoesWiFIEMQTT() {
   if (!MQTT.connected()) reconnectMQTT();
-  reconectWiFi();
-}
+  MQTT.loop();
 
-void reconnectMQTT() {
-  while (!MQTT.connected()) {
-    Serial.print("🔄 Conectando ao Broker MQTT: ");
-    Serial.println(default_BROKER_MQTT);
-    if (MQTT.connect(default_ID_MQTT)) {
-      Serial.println("✅ Conectado ao broker!");
-      MQTT.subscribe(default_TOPICO_SUBSCRIBE);
-    } else {
-      Serial.println("❌ Falha, tentando novamente em 3s...");
-      delay(3000);
-    }
+  // ======== Leitura dos sensores ========
+  float temp = dht.readTemperature();
+  float hum = dht.readHumidity();
+  int light = analogRead(LDR_PIN);
+  int noise = analogRead(NOISE_PIN);
+  bool pausePressed = digitalRead(BUTTON_PIN) == LOW;
+
+  if (isnan(temp) || isnan(hum)) {
+    Serial.println("⚠️ Erro ao ler o DHT22");
+    delay(2000);
+    return;
   }
-}
 
-// ========================= Sensores =========================
+  // ======== Normalização de valores ========
+  int lightPercent = map(light, 0, 4095, 0, 100);
+  int noiseLevel = map(noise, 0, 4095, 0, 100);
 
-// Luminosidade (%)
-void handleLuminosity() {
-  int sensorValue = analogRead(LDR_PIN);
-  int luminosity = map(sensorValue, 0, 4095, 0, 100);
-  Serial.print("💡 Luminosidade: ");
-  Serial.print(luminosity);
-  Serial.println(" %");
+  // ======== Lógica de decisão automática ========
+  String status;
+  if (temp > 28 || noiseLevel > 70 || lightPercent < 30) {
+    status = "ALERTA";
+    setColor(255, 200, 0);  // LED amarelo
+  } else if (pausePressed) {
+    status = "PAUSA";
+    setColor(0, 0, 255);    // LED azul
+  } else {
+    status = "IDEAL";
+    setColor(0, 255, 0);    // LED verde
+  }
 
-  String payload = "{\"local\":\"" + String(localizacao) + "\",\"luminosidade\":" + String(luminosity) + "}";
-  MQTT.publish(default_TOPICO_PUBLISH_2, payload.c_str());
-}
+  // ======== Publicação MQTT ========
+  String envPayload = "{\"temperatura\":" + String(temp) +
+                      ",\"umidade\":" + String(hum) +
+                      ",\"luminosidade\":" + String(lightPercent) +
+                      ",\"ruido\":" + String(noiseLevel) + "}";
+  MQTT.publish(TOPICO_PUBLISH_ENV, envPayload.c_str());
 
-// Umidade do ar (%)
-void handleHumidity() {
-  float h = dht.readHumidity();
-  if (isnan(h)) return;
-  Serial.print("💧 Umidade do ar: ");
-  Serial.print(h);
-  Serial.println(" %");
+  String statusPayload = "{\"status\":\"" + status + "\"}";
+  MQTT.publish(TOPICO_PUBLISH_STATUS, statusPayload.c_str());
 
-  String payload = "{\"local\":\"" + String(localizacao) + "\",\"umidade\":" + String(h) + "}";
-  MQTT.publish(default_TOPICO_PUBLISH_H, payload.c_str());
-}
+  Serial.println("\n📡 Dados enviados:");
+  Serial.println(envPayload);
+  Serial.println(statusPayload);
 
-// Temperatura (°C)
-void handleTemperature() {
-  float t = dht.readTemperature();
-  if (isnan(t)) return;
-  Serial.print("🌡️ Temperatura: ");
-  Serial.print(t);
-  Serial.println(" °C");
-
-  String payload = "{\"local\":\"" + String(localizacao) + "\",\"temperatura\":" + String(t) + "}";
-  MQTT.publish(default_TOPICO_PUBLISH_T, payload.c_str());
-}
-
-// Umidade do solo (%)
-void handleSoilHumidity() {
-  int soilValue = analogRead(SOIL_PIN);
-  int soilPercent = map(soilValue, 4095, 0, 0, 100);
-  Serial.print("🌱 Umidade do solo: ");
-  Serial.print(soilPercent);
-  Serial.println(" %");
-
-  String payload = "{\"local\":\"" + String(localizacao) + "\",\"umidadeSolo\":" + String(soilPercent) + "}";
-  MQTT.publish(default_TOPICO_PUBLISH_SOIL, payload.c_str());
-}
-
-// Qualidade do ar (AQI)
-void handleAirQuality() {
-  int mqValue = analogRead(AIR_PIN);
-  int airQuality = map(mqValue, 0, 4095, 0, 500); 
-  String airStatus;
-  if (airQuality < 100) airStatus = "Boa";
-  else if (airQuality < 200) airStatus = "Moderada";
-  else if (airQuality < 300) airStatus = "Ruim";
-  else airStatus = "Muito Ruim";
-
-  Serial.print("🌫️ Qualidade do ar (simulada): AQI=");
-  Serial.print(airQuality);
-  Serial.print(" → ");
-  Serial.println(airStatus);
-
-  String payload = "{\"local\":\"" + String(localizacao) + "\",\"qualidadeAr\":" + String(airQuality) + ",\"status\":\"" + airStatus + "\"}";
-  MQTT.publish(default_TOPICO_PUBLISH_AIR, payload.c_str());
+  delay(3000); // intervalo de leitura
 }
