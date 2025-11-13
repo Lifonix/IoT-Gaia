@@ -5,21 +5,21 @@
 // ========================= Configurações de Rede e Broker =========================
 const char* WIFI_SSID = "Lifonix.IOT";
 const char* WIFI_PASSWORD = "lifonixforthefuture";
-const char* BROKER_MQTT = "54.172.140.81";   // IP do broker (pode usar Mosquitto público)
-const int   BROKER_PORT = 1981;
+const char* BROKER_MQTT = "broker.hivemq.com";   // Broker público para teste
+const int   BROKER_PORT = 1883;
 const char* MQTT_ID = "lifonix_workwell_esp32";
 
 // ========================= Tópicos MQTT =========================
 const char* TOPICO_PUBLISH_STATUS = "/lifonix/workwell/status";
 const char* TOPICO_PUBLISH_ENV = "/lifonix/workwell/env";
-const char* TOPICO_SUBSCRIBE = "/lifonix/workwell/cmd";  // comandos remotos opcionais
+const char* TOPICO_SUBSCRIBE = "/lifonix/workwell/cmd";
 
 // ========================= Configurações de Sensores =========================
 #define DHTPIN 4
 #define DHTTYPE DHT22
 #define LDR_PIN 34
 #define NOISE_PIN 35      // Potenciômetro simulando ruído
-#define BUTTON_PIN 19     // Botão para pausa manual
+#define BUTTON_PIN 19
 #define LED_R 16
 #define LED_G 17
 #define LED_B 18
@@ -82,9 +82,9 @@ void reconnectMQTT() {
 
 // ========================= LED RGB =========================
 void setColor(int r, int g, int b) {
-  analogWrite(LED_R, r);
-  analogWrite(LED_G, g);
-  analogWrite(LED_B, b);
+  ledcWrite(0, r); // canal 0
+  ledcWrite(1, g); // canal 1
+  ledcWrite(2, b); // canal 2
 }
 
 // ========================= Setup =========================
@@ -97,9 +97,14 @@ void setup() {
   pinMode(LDR_PIN, INPUT);
   pinMode(NOISE_PIN, INPUT);
   pinMode(BUTTON_PIN, INPUT_PULLUP);
-  pinMode(LED_R, OUTPUT);
-  pinMode(LED_G, OUTPUT);
-  pinMode(LED_B, OUTPUT);
+
+  // Configurar canais PWM para LED RGB
+  ledcSetup(0, 5000, 8);
+  ledcSetup(1, 5000, 8);
+  ledcSetup(2, 5000, 8);
+  ledcAttachPin(LED_R, 0);
+  ledcAttachPin(LED_G, 1);
+  ledcAttachPin(LED_B, 2);
 
   Serial.println("✅ Sistema Lifonix WorkWell iniciado!");
 }
