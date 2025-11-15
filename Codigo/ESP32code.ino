@@ -9,53 +9,44 @@ const char* default_BROKER_MQTT = "44.223.43.74";
 const int   default_BROKER_PORT = 1883;
 const int   default_D4          = 2;
 
-const char* default_TOPICO_SUBSCRIBE = "/TEF/device001/cmd";
-const char* default_TOPICO_PUBLISH_1 = "/TEF/device001/attrs";
-const char* default_TOPICO_PUBLISH_2 = "/TEF/device001/attrs/p"; // Luminosidade / som (%)
-const char* default_TOPICO_PUBLISH_H = "/TEF/device001/attrs/h"; // Umidade
-const char* default_TOPICO_PUBLISH_T = "/TEF/device001/attrs/t"; // Temperatura
+const char* default_TOPICO_SUBSCRIBE = "/lifonix/workwell/cmd";
+const char* default_TOPICO_ENV       = "/lifonix/workwell/env";     // ENV JSON
+const char* default_TOPICO_STATUS    = "/lifonix/workwell/status";  // online/offline
+
+const char* default_TOPICO_PUBLISH_1 = "/lifonix/workwell/attrs";
+const char* default_TOPICO_PUBLISH_2 = "/lifonix/workwell/attrs/p"; 
+const char* default_TOPICO_PUBLISH_H = "/lifonix/workwell/attrs/h"; 
+const char* default_TOPICO_PUBLISH_T = "/lifonix/workwell/attrs/t"; 
 
 const char* default_ID_MQTT = "fiware_001";
-const char* topicPrefix     = "device001";
+const char* topicPrefix     = "workwell";
 
-// ========================= Pinos configuráveis =========================
-// DHT22 no GPIO4
+// ========================= Pinos =========================
 #define DHTPIN  4
 #define DHTTYPE DHT22
-
-// Sensor analógico no GPIO34
 int pinLuminosity = 34;
 
 DHT dht(DHTPIN, DHTTYPE);
 
 // ========================= Variáveis =========================
+WiFiClient espClient;
+PubSubClient MQTT(espClient);
+
+char EstadoSaida = '0';
+
 char* SSID        = const_cast<char*>(default_SSID);
 char* PASSWORD    = const_cast<char*>(default_PASSWORD);
 char* BROKER_MQTT = const_cast<char*>(default_BROKER_MQTT);
 int   BROKER_PORT = default_BROKER_PORT;
 
-char* TOPICO_SUBSCRIBE = const_cast<char*>(default_TOPICO_SUBSCRIBE);
-char* TOPICO_PUBLISH_1 = const_cast<char*>(default_TOPICO_PUBLISH_1);
-char* TOPICO_PUBLISH_2 = const_cast<char*>(default_TOPICO_PUBLISH_2);
-char* TOPICO_PUBLISH_H = const_cast<char*>(default_TOPICO_PUBLISH_H);
-char* TOPICO_PUBLISH_T = const_cast<char*>(default_TOPICO_PUBLISH_T);
-
-char* ID_MQTT = const_cast<char*>(default_ID_MQTT);
-int   D4      = default_D4;
-
-WiFiClient espClient;
-PubSubClient MQTT(espClient);
-char EstadoSaida = '0';
-
 // ========================= Funções =========================
 void initSerial() {
   Serial.begin(115200);
   delay(500);
-  Serial.println();
-  Serial.println("=== device001 iniciando ===");
+  Serial.println("\n=== workwell iniciando ===");
 }
 
-// Tenta conectar ao WiFi com timeout e mensagens claras
+// WiFi com timeout
 bool conectaWiFiComTimeout(unsigned long timeoutMs) {
   Serial.print("Conectando ao WiFi: ");
   Serial.println(SSID);
@@ -70,34 +61,26 @@ bool conectaWiFiComTimeout(unsigned long timeoutMs) {
   }
   Serial.println();
 
-  int status = WiFi.status();
-  Serial.print("Status WiFi apos tentativa: ");
-  Serial.println(status); // 3 = WL_CONNECTED
-
-  if (status == WL_CONNECTED) {
-    Serial.print("WiFi CONECTADO. IP: ");
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.print("WiFi conectado! IP: ");
     Serial.println(WiFi.localIP());
-    digitalWrite(D4, LOW);
+    digitalWrite(default_D4, LOW);
     return true;
-  } else {
-    Serial.println("NAO conseguiu conectar ao WiFi (status diferente de 3).");
-    return false;
   }
+
+  Serial.println("Falha ao conectar no WiFi!");
+  return false;
 }
 
 void reconectWiFi() {
   if (WiFi.status() == WL_CONNECTED) return;
 
-  // tenta por 10 segundos
-  bool ok = conectaWiFiComTimeout(10000);
-  if (!ok) {
-    Serial.println("WiFi ainda desconectado. Vai tentar de novo depois...");
-  }
+  bool ok = conectaWiFiComTimeout(8000);
+  if (!ok) Serial.println("Ainda desconectado. Tentará novamente...");
 }
 
 void initWiFi() {
-  Serial.println("Iniciando WiFi...");
-  conectaWiFiComTimeout(10000); // primeira tentativa
+  conectaWiFiComTimeout(10000);
 }
 
 void mqtt_callback(char* topic, byte* payload, unsigned int length) {
@@ -109,18 +92,16 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("]: ");
   Serial.println(msg);
 
-  String onTopic  = String(topicPrefix) + "@on|";
-  String offTopic = String(topicPrefix) + "@off|";
+  String onCmd  = String(topicPrefix) + "@on|";
+  String offCmd = String(topicPrefix) + "@off|";
 
-  if (msg.equals(onTopic)) {
-    digitalWrite(D4, HIGH);
+  if (msg == onCmd) {
+    digitalWrite(default_D4, HIGH);
     EstadoSaida = '1';
-    Serial.println("Saida D4: ON");
   }
-  if (msg.equals(offTopic)) {
-    digitalWrite(D4, LOW);
+  if (msg == offCmd) {
+    digitalWrite(default_D4, LOW);
     EstadoSaida = '0';
-    Serial.println("Saida D4: OFF");
   }
 }
 
@@ -130,137 +111,137 @@ void initMQTT() {
 }
 
 void reconnectMQTT() {
-  if (WiFi.status() != WL_CONNECTED) {
-    // sem WiFi, nem tenta MQTT
-    return;
-  }
+  if (WiFi.status() != WL_CONNECTED) return;
 
   while (!MQTT.connected()) {
-    Serial.print("Conectando ao broker MQTT...");
-    if (MQTT.connect(ID_MQTT)) {
-      Serial.println(" conectado!");
-      MQTT.subscribe(TOPICO_SUBSCRIBE);
-      Serial.print("Inscrito em: ");
-      Serial.println(TOPICO_SUBSCRIBE);
+    Serial.print("Conectando ao broker...");
+    if (MQTT.connect(default_ID_MQTT)) {
+      Serial.println(" OK!");
+      MQTT.subscribe(default_TOPICO_SUBSCRIBE);
     } else {
-      Serial.print("falha, rc=");
-      Serial.print(MQTT.state());
-      Serial.println(" - tentando em 2s");
+      Serial.print("Falhou, rc=");
+      Serial.println(MQTT.state());
       delay(2000);
     }
   }
 }
 
 void VerificaConexoesWiFIEMQTT() {
-  // primeiro garante WiFi
   reconectWiFi();
-
-  // so tenta MQTT se WiFi estiver conectado
   if (WiFi.status() == WL_CONNECTED && !MQTT.connected()) {
     reconnectMQTT();
   }
 }
 
+// envia estado do relé
 void EnviaEstadoOutputMQTT() {
-  if (EstadoSaida == '1') MQTT.publish(TOPICO_PUBLISH_1, "s|on");
-  if (EstadoSaida == '0') MQTT.publish(TOPICO_PUBLISH_1, "s|off");
+  if (EstadoSaida == '1') MQTT.publish(default_TOPICO_PUBLISH_1, "s|on");
+  if (EstadoSaida == '0') MQTT.publish(default_TOPICO_PUBLISH_1, "s|off");
 }
 
 void InitOutput() {
-  pinMode(D4, OUTPUT);
-  digitalWrite(D4, HIGH);
-  boolean toggle = false;
-
-  for (int i = 0; i <= 10; i++) {
-    toggle = !toggle;
-    digitalWrite(D4, toggle);
-    delay(200);
-  }
-
-  digitalWrite(D4, LOW);
+  pinMode(default_D4, OUTPUT);
+  digitalWrite(default_D4, HIGH);
+  delay(200);
+  digitalWrite(default_D4, LOW);
   EstadoSaida = '0';
 }
 
-// ========================= Leituras dos Sensores =========================
+// ========================= SENSORES =========================
 
-// Sensor analógico (%)
 void handleLuminosity() {
-  static unsigned long last = 0;           // guarda o último momento em que leu
-  unsigned long agora = millis();
+  static unsigned long last = 0;           
+  if (millis() - last < 1000) return;
 
-  // só lê e envia a cada 1000 ms (1 segundo)
-  if (agora - last < 1000) {
-    return;
-  }
-
-  int value = analogRead(pinLuminosity);          // leitura 0–4095
-  int luminosity = map(value, 0, 4095, 0, 100);   // 0–100%
-
-  Serial.print("Luminosidade raw: ");
-  Serial.print(value);
-  Serial.print("  |  Luminosidade (%): ");
-  Serial.println(luminosity);
+  int raw = analogRead(pinLuminosity);
+  int lum = map(raw, 0, 4095, 0, 100);
 
   char payload[8];
-  itoa(luminosity, payload, 10);
-  MQTT.publish(TOPICO_PUBLISH_2, payload);
+  itoa(lum, payload, 10);
+  MQTT.publish(default_TOPICO_PUBLISH_2, payload);
 
-  last = agora;  // atualiza o tempo da última leitura
+  last = millis();
 }
 
-// Umidade (DHT22)
 void handleHumidity() {
   static unsigned long last = 0;
   if (millis() - last < 2000) return;
 
   float h = dht.readHumidity();
   if (!isnan(h)) {
-    Serial.print("Umidade (%): ");
-    Serial.println(h);
-
     char payload[16];
     dtostrf(h, 0, 1, payload);
-    MQTT.publish(TOPICO_PUBLISH_H, payload);
-  } else {
-    Serial.println("Falha ao ler umidade do DHT22");
+    MQTT.publish(default_TOPICO_PUBLISH_H, payload);
   }
 
   last = millis();
 }
 
-// Temperatura (DHT22)
 void handleTemperature() {
   static unsigned long last = 0;
   if (millis() - last < 2000) return;
 
   float t = dht.readTemperature();
   if (!isnan(t)) {
-    Serial.print("Temperatura (C): ");
-    Serial.println(t);
-
     char payload[16];
     dtostrf(t, 0, 1, payload);
-    MQTT.publish(TOPICO_PUBLISH_T, payload);
-  } else {
-    Serial.println("Falha ao ler temperatura do DHT22");
+    MQTT.publish(default_TOPICO_PUBLISH_T, payload);
   }
 
   last = millis();
 }
 
-// ========================= Setup =========================
+// ========================= ENV JSON =========================
+void sendEnv() {
+  static unsigned long last = 0;
+  if (millis() - last < 2000) return;
+
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+
+  int raw = analogRead(pinLuminosity);
+  int lum = map(raw, 0, 4095, 0, 100);
+
+  if (isnan(h) || isnan(t)) return;
+
+  char json[128];
+  snprintf(json, sizeof(json),
+           "{\"temp\":%.1f,\"umid\":%.1f,\"lum\":%d}",
+           t, h, lum);
+
+  MQTT.publish(default_TOPICO_ENV, json);
+
+  Serial.print("ENV JSON: ");
+  Serial.println(json);
+
+  last = millis();
+}
+
+// ========================= STATUS =========================
+void sendStatus() {
+  static unsigned long last = 0;
+  if (millis() - last < 5000) return;
+
+  if (WiFi.status() == WL_CONNECTED && MQTT.connected()) {
+    MQTT.publish(default_TOPICO_STATUS, "online");
+  } else {
+    MQTT.publish(default_TOPICO_STATUS, "offline");
+  }
+
+  last = millis();
+}
+
+// ========================= SETUP =========================
 void setup() {
   InitOutput();
   initSerial();
-  initWiFi();   // tenta conectar ao WiFi
+  initWiFi();
   initMQTT();
   dht.begin();
-
   delay(2000);
-  MQTT.publish(TOPICO_PUBLISH_1, "s|on");
 }
 
-// ========================= Loop =========================
+// ========================= LOOP =========================
 void loop() {
   VerificaConexoesWiFIEMQTT();
   EnviaEstadoOutputMQTT();
@@ -268,6 +249,9 @@ void loop() {
   handleLuminosity();
   handleHumidity();
   handleTemperature();
+
+  sendEnv();     // envia JSON ENV
+  sendStatus();  // envia status simples
 
   MQTT.loop();
 }
