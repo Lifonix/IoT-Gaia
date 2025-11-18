@@ -1,10 +1,10 @@
 
 # GreenHub & WorkWell – Plataforma Web + Sistema IoT de Bem-Estar no Trabalho
 
-Este repositório reúne dois pilares de uma mesma solução para o futuro do trabalho.[web:296][web:335]  
+Este repositório reúne dois pilares de uma mesma solução para o futuro do trabalho.
 
-- **GreenHub / Lifonix (frontend + backend)** – Plataforma web em **React** com um backend Node simples para servir perfis e recomendações, conectando talentos, empresas e oportunidades, com foco em propósito, competências do futuro e economia verde.[web:309][web:320]  
-- **WorkWell (IoT)** – Sistema baseado em **ESP32 + MQTT + Node-RED + dashboard React** para monitorar indicadores de estresse e bem-estar de trabalhadores em casa ou no escritório.[web:290][web:293]  
+- **GreenHub / Lifonix (frontend + backend)** – Plataforma web em **React** com um backend Node simples para servir perfis e recomendações, conectando talentos, empresas e oportunidades, com foco em propósito, competências do futuro e economia verde.
+- **WorkWell (IoT)** – Sistema baseado em **ESP32 + MQTT + Node-RED + dashboard React** para monitorar indicadores de estresse e bem-estar de trabalhadores em casa ou no escritório.
 
 Juntos, GreenHub e WorkWell formam um ecossistema que conecta pessoas, tecnologia e bem-estar, alinhado às transformações do futuro do trabalho. 
 
@@ -14,22 +14,21 @@ Juntos, GreenHub e WorkWell formam um ecossistema que conecta pessoas, tecnologi
 
 ### GreenHub (site e API)
 
-- Aplicação **SPA em React** no diretório `frontend/`, com páginas como Home, Dashboard, Empresas, Cadastro de Empresas, About e Notícias Ambientais.[web:309][web:320]  
-- Backend Node/Express simples em `backend/`, servindo dados de **profissionais** e **recomendados** a partir de arquivos JSON.[web:293][web:303]  
-- Tela inicial com hero, botões de ação, lista de profissionais com filtros e seções institucionais (Trending Skills, Valores, Métricas da Comunidade, Histórias).[web:309][web:320]  
-- Suporte a **modo claro/escuro** controlado na Home.[web:244][web:320]  
-
+- Aplicação **SPA em React** no diretório `frontend/`, com páginas como Home, Dashboard, Empresas, Cadastro de Empresas, About e Notícias Ambientais.
+- Backend Node/Express simples em `backend/`, servindo dados de **profissionais** e **recomendados** a partir de arquivos JSON.
+- Tela inicial com hero, botões de ação, lista de profissionais com filtros e seções institucionais (Trending Skills, Valores, Métricas da Comunidade, Histórias).
+- Suporte a **modo claro/escuro** controlado na Home.
 ### WorkWell (IoT + bem-estar)
 
-- Dispositivo com **ESP32** coleta dados de sensores (ex.: temperatura, umidade e luminosidade) como proxies para condições de estresse.[web:293][web:298]  
-- Broker MQTT recebe e encaminha mensagens usando tópicos dedicados ao WorkWell.[web:347][web:355]  
-- **Node-RED** assina esses tópicos, calcula um índice de estresse, grava em arquivo e expõe uma API `/dadosGreenHub` que a dashboard em React consome.[web:290][web:368]  
+- Dispositivo com **ESP32** coleta dados de sensores (ex.: temperatura, umidade e luminosidade) como proxies para condições de estresse.
+- Broker MQTT recebe e encaminha mensagens usando tópicos dedicados ao WorkWell.
+- **Node-RED** assina esses tópicos, calcula um índice de estresse, grava em arquivo e expõe uma API `/dadosGreenHub` que a dashboard em React consome.
 
 ---
 
 ## 🧱 Arquitetura de pastas do repositório
 
-A estrutura atual do projeto GreenHub está organizada da seguinte forma.[web:331][web:336]  
+A estrutura atual do projeto GreenHub está organizada da seguinte forma.
 
 ```
 GREENHUB/
@@ -79,8 +78,8 @@ GREENHUB/
 └─ node_modules/                # (se criado na raiz, opcional)
 ```
 
-- **`backend/`** concentra a API de dados de profissionais, servindo o frontend GreenHub.[web:293][web:303]  
-- **`frontend/`** é a aplicação React que constrói toda a experiência visual da plataforma.[web:309][web:320]  
+- **`backend/`** concentra a API de dados de profissionais, servindo o frontend GreenHub. 
+- **`frontend/`** é a aplicação React que constrói toda a experiência visual da plataforma.
 - O código do WorkWell (ESP32 + MQTT + Node-RED + dashboard React) pode ficar em outro repositório ou em uma pasta dedicada (`workwell-iot/`) caso seja versionado junto.
 
 ---
@@ -89,25 +88,25 @@ GREENHUB/
 
 ### Funcionalidades principais
 
-- Página inicial com.[web:309][web:320]  
+- Página inicial com. 
   - Hero apresentando a proposta da plataforma.  
   - Botões para explorar profissionais, criar perfil e acesso de empresas.  
   - Lista de profissionais com filtros (nome, área, cidade, tecnologias).  
-  - Toggle para exibir apenas perfis recomendados (consumindo `recomendados.json`).[web:293][web:303]  
+  - Toggle para exibir apenas perfis recomendados (consumindo `recomendados.json`). 
 - Páginas complementares (`src/pages/`):  
   - `Dashboard.jsx` – área para visualização de gráficos (ex.: dados ambientais ou de estresse).  
   - `Empresas.jsx` – visão voltada a empresas e vagas.  
   - `CadastroEmpresa.jsx` – fluxo de cadastro de empresas.  
   - `About.jsx` e `NoticiasAmbientais.jsx` – conteúdo institucional e notícias relacionadas a futuro do trabalho e sustentabilidade.  
 - Componentes reutilizáveis em `src/components/` para seções como TrendingSkills, ValueSection, CommunitySection, StoriesSection, além de Header, Footer e modais.
-- **Modo claro/escuro** controlado na `Home` via estado `dark` e classes condicionais em todos os blocos principais.[web:244][web:320]  
+- **Modo claro/escuro** controlado na `Home` via estado `dark` e classes condicionais em todos os blocos principais. 
 
 ### Tecnologias principais (frontend)
 
-- React + React Router para SPA.[web:309][web:320]  
-- Axios para consumo da API do backend.[web:293][web:320]  
-- Vite como bundler (conforme presença do `vite.config.js`).[web:322][web:320]  
-- CSS utilitário / Tailwind-like para estilização responsiva.[web:312][web:316]  
+- React + React Router para SPA.
+- Axios para consumo da API do backend.  
+- Vite como bundler (conforme presença do `vite.config.js`).
+- CSS utilitário / Tailwind-like para estilização responsiva.
 
 ### Como rodar o backend (API de perfis)
 
@@ -130,7 +129,7 @@ npm install
 npm run dev   # ou npm start
 ```
 
-Acesse no navegador.[web:322][web:320]  
+Acesse no navegador.
 
 ```
 http://localhost:5173
@@ -148,7 +147,7 @@ Certifique-se de que as URLs usadas em Axios apontam para o backend (ex.: `http:
 
 WorkWell é um sistema IoT que monitora condições relacionadas ao estresse (como temperatura, umidade e luminosidade do ambiente) e envia esses dados para um backend via MQTT, permitindo visualização em dashboards. 
 
-Camadas previstas.[web:290][web:293]  
+Camadas previstas.  
 
 1. **ESP32 + sensores**  
    - Lê DHT22 (temperatura/umidade) e luminosidade em um pino analógico.
