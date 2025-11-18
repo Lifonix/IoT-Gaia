@@ -6,7 +6,7 @@ Este repositório reúne dois pilares de uma mesma solução para o futuro do tr
 - **GreenHub / Lifonix (frontend + backend)** – Plataforma web em **React** com um backend Node simples para servir perfis e recomendações, conectando talentos, empresas e oportunidades, com foco em propósito, competências do futuro e economia verde.[web:309][web:320]  
 - **WorkWell (IoT)** – Sistema baseado em **ESP32 + MQTT + Node-RED + dashboard React** para monitorar indicadores de estresse e bem-estar de trabalhadores em casa ou no escritório.[web:290][web:293]  
 
-Juntos, GreenHub e WorkWell formam um ecossistema que conecta pessoas, tecnologia e bem-estar, alinhado às transformações do futuro do trabalho.[web:295][web:301]  
+Juntos, GreenHub e WorkWell formam um ecossistema que conecta pessoas, tecnologia e bem-estar, alinhado às transformações do futuro do trabalho. 
 
 ---
 
