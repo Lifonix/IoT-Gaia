@@ -81,7 +81,7 @@ GREENHUB/
 
 - **`backend/`** concentra a API de dados de profissionais, servindo o frontend GreenHub.[web:293][web:303]  
 - **`frontend/`** é a aplicação React que constrói toda a experiência visual da plataforma.[web:309][web:320]  
-- O código do WorkWell (ESP32 + MQTT + Node-RED + dashboard React) pode ficar em outro repositório ou em uma pasta dedicada (`workwell-iot/`) caso seja versionado junto.[web:331][web:344]  
+- O código do WorkWell (ESP32 + MQTT + Node-RED + dashboard React) pode ficar em outro repositório ou em uma pasta dedicada (`workwell-iot/`) caso seja versionado junto.
 
 ---
 
@@ -99,7 +99,7 @@ GREENHUB/
   - `Empresas.jsx` – visão voltada a empresas e vagas.  
   - `CadastroEmpresa.jsx` – fluxo de cadastro de empresas.  
   - `About.jsx` e `NoticiasAmbientais.jsx` – conteúdo institucional e notícias relacionadas a futuro do trabalho e sustentabilidade.  
-- Componentes reutilizáveis em `src/components/` para seções como TrendingSkills, ValueSection, CommunitySection, StoriesSection, além de Header, Footer e modais.[web:309][web:320]  
+- Componentes reutilizáveis em `src/components/` para seções como TrendingSkills, ValueSection, CommunitySection, StoriesSection, além de Header, Footer e modais.
 - **Modo claro/escuro** controlado na `Home` via estado `dark` e classes condicionais em todos os blocos principais.[web:244][web:320]  
 
 ### Tecnologias principais (frontend)
@@ -117,7 +117,7 @@ npm install
 npm start    # ou node server.js, conforme script definido
 ```
 
-Endpoints típicos (ajuste para o que estiver configurado em `server.js`).[web:293][web:303]  
+Endpoints típicos (ajuste para o que estiver configurado em `server.js`). 
 
 - `GET /api/profissionais` → lê `data/profiles.json`  
 - `GET /api/recomendacoes` → lê `data/recomendados.json`  
@@ -138,7 +138,7 @@ ou
 http://localhost:3000
 ```
 
-Certifique-se de que as URLs usadas em Axios apontam para o backend (ex.: `http://localhost:5000/api/...`).[web:293][web:320]  
+Certifique-se de que as URLs usadas em Axios apontam para o backend (ex.: `http://localhost:5000/api/...`). 
 
 ---
 
@@ -146,44 +146,42 @@ Certifique-se de que as URLs usadas em Axios apontam para o backend (ex.: `http:
 
 ### Descrição geral
 
-WorkWell é um sistema IoT que monitora condições relacionadas ao estresse (como temperatura, umidade e luminosidade do ambiente) e envia esses dados para um backend via MQTT, permitindo visualização em dashboards.[web:293][web:298]  
+WorkWell é um sistema IoT que monitora condições relacionadas ao estresse (como temperatura, umidade e luminosidade do ambiente) e envia esses dados para um backend via MQTT, permitindo visualização em dashboards. 
 
 Camadas previstas.[web:290][web:293]  
 
 1. **ESP32 + sensores**  
-   - Lê DHT22 (temperatura/umidade) e luminosidade em um pino analógico.[web:347][web:379]  
-   - Publica leituras em tópicos MQTT usando a biblioteca PubSubClient.[web:347][web:355]  
-
+   - Lê DHT22 (temperatura/umidade) e luminosidade em um pino analógico.
+   - Publica leituras em tópicos MQTT usando a biblioteca PubSubClient.
 2. **Broker MQTT / Node-RED**  
-   - Recebe mensagens do ESP32 em tópicos específicos `/lifonix/workwell/...`.[web:347][web:353]  
-   - Processa, normaliza e opcionalmente expõe dados via HTTP/WebSocket para dashboards.[web:290][web:368]  
-
+   - Recebe mensagens do ESP32 em tópicos específicos `/lifonix/workwell/...`. 
+   - Processa, normaliza e opcionalmente expõe dados via HTTP/WebSocket para dashboards.
 3. **Dashboard React (WorkWell ou GreenHub)**  
    - Consome os dados enviados pelo Node-RED.  
-   - Exibe gráficos de evolução, gauges e indicadores de status de conforto/estresse.[web:294][web:303]  
+   - Exibe gráficos de evolução, gauges e indicadores de status de conforto/estresse. 
 
 ---
 
 ## 🔬 Simulação no Wokwi (WorkWell)
 
-O firmware do WorkWell pode ser testado sem hardware físico usando o simulador online **Wokwi**.[web:347][web:360]  
+O firmware do WorkWell pode ser testado sem hardware físico usando o simulador online **Wokwi**.
 
 - Projeto de simulação do ESP32 + DHT22 + MQTT do WorkWell:  
-  `https://wokwi.com/projects/447651098360541185`.[web:347][web:365]  
+  `https://wokwi.com/projects/447651098360541185`.
 
 No projeto Wokwi, o ESP32.[web:347][web:350]  
 
-- Conecta à rede Wi‑Fi de simulação (`Wokwi-GUEST`) usando a API padrão de WiFi do ESP32.[web:347][web:360]  
-- Usa a biblioteca **PubSubClient** para publicar e assinar mensagens MQTT em um broker remoto.[web:350][web:355]  
+- Conecta à rede Wi‑Fi de simulação (`Wokwi-GUEST`) usando a API padrão de WiFi do ESP32.
+- Usa a biblioteca **PubSubClient** para publicar e assinar mensagens MQTT em um broker remoto. 
 - Publica dados em tópicos como.  
-  - `/lifonix/workwell/env` – JSON com `temp`, `umid` e `lum` (ex.: `{"temp":24.5,"umid":55.2,"lum":73}`).[web:347][web:374]  
+  - `/lifonix/workwell/env` – JSON com `temp`, `umid` e `lum` (ex.: `{"temp":24.5,"umid":55.2,"lum":73}`).
   - `/lifonix/workwell/attrs` – estado da saída (ex.: `s|on` / `s|off`).  
   - `/lifonix/workwell/attrs/h` – umidade isolada.  
   - `/lifonix/workwell/attrs/t` – temperatura isolada.  
-  - `/lifonix/workwell/status` – status de conexão (`online` / `offline`).[web:347][web:369]  
-- Recebe comandos no tópico `/lifonix/workwell/cmd`, usando mensagens como `workwell@on|` e `workwell@off|` para ligar/desligar a saída digital (`default_D4`).[web:347][web:355]  
+  - `/lifonix/workwell/status` – status de conexão (`online` / `offline`).
+- Recebe comandos no tópico `/lifonix/workwell/cmd`, usando mensagens como `workwell@on|` e `workwell@off|` para ligar/desligar a saída digital (`default_D4`).
 
-Esse cenário permite validar.[web:351][web:356]  
+Esse cenário permite validar.
 
 - Publicação de dados ambientais em tempo quase real.  
 - Consumo dos tópicos pelo Node-RED (ou outro cliente MQTT) e visualização em dashboards.  
@@ -193,7 +191,7 @@ Esse cenário permite validar.[web:351][web:356]
 
 ## ⚙️ Fluxo WorkWell no Node‑RED
 
-O fluxo principal do WorkWell no Node‑RED é dividido em **dois blocos**: ingestão e API para o frontend.[web:290][web:382]  
+O fluxo principal do WorkWell no Node‑RED é dividido em **dois blocos**: ingestão e API para o frontend.
 
 ### 1. Bloco de ingestão e cálculo de estresse
 
@@ -211,14 +209,14 @@ dados.json (file)   Ponto (time,temp,umid,lum,stress) → (ex.: gráfico/timelin
 ```
 
 - **ESP32 ENV JSON (MQTT in)**  
-  - Assina o tópico `/lifonix/workwell/env` e recebe mensagens JSON com `temp`, `umid` e `lum`.[web:347][web:353]  
+  - Assina o tópico `/lifonix/workwell/env` e recebe mensagens JSON com `temp`, `umid` e `lum`. 
 - **JSON → Objeto (node JSON)**  
   - Converte `msg.payload` de string JSON para objeto JavaScript.  
 - **Function “Calcula estresse”**  
   - Lê `msg.payload.temp`, `msg.payload.umid`, `msg.payload.lum`.  
   - Calcula um índice simples de estresse (exemplo):  
     - Estresse maior com temperatura alta, umidade extrema e baixa luminosidade.  
-  - Adiciona `msg.payload.stress` e timestamp (ex.: `msg.payload.time = Date.now()`).[web:382][web:384]  
+  - Adiciona `msg.payload.stress` e timestamp (ex.: `msg.payload.time = Date.now()`).
 - **dados.json (file)**  
   - Salva as leituras em arquivo (um ponto por linha).  
 - **Ponto (time,temp,umid,lum,stress)**  
@@ -246,7 +244,7 @@ Resposta JSON (HTTP response)
   - Converte cada linha do arquivo em um objeto JSON com `{ time, temp, umid, lum, stress }`.  
   - Monta `msg.payload` como um array com todos os pontos.  
 - **Resposta JSON (HTTP response)**  
-  - Devolve o array em `msg.payload` como resposta HTTP para o frontend GreenHub consumir.[web:368][web:372]  
+  - Devolve o array em `msg.payload` como resposta HTTP para o frontend GreenHub consumir. 
 
 Com esse fluxo, o GreenHub pode chamar `GET /dadosGreenHub` (apontando para o Node‑RED) e renderizar um gráfico de histórico WorkWell em `Dashboard.jsx`.  
 
@@ -257,28 +255,28 @@ Com esse fluxo, o GreenHub pode chamar `GET /dadosGreenHub` (apontando para o No
 ### 1. Abrir a simulação no Wokwi
 
 1. Acesse o projeto Wokwi do WorkWell:  
-   `https://wokwi.com/projects/447651098360541185`.[web:347][web:365]  
+   `https://wokwi.com/projects/447651098360541185`.
 2. Confira no código.  
    - Conexão com `Wokwi-GUEST`.  
    - Uso de `WiFi.h`, `PubSubClient.h` e `DHT.h`.  
-   - Publicação nos tópicos `/lifonix/workwell/...` e envio de JSON em `/lifonix/workwell/env`.[web:347][web:374]  
+   - Publicação nos tópicos `/lifonix/workwell/...` e envio de JSON em `/lifonix/workwell/env`. 
 
 ### 2. Verificar/ajustar o broker MQTT
 
-1. No código, o broker está definido como algo similar a.[web:347][web:355]  
+1. No código, o broker está definido como algo similar a.
 
    ```
    const char* default_BROKER_MQTT = "44.223.43.74";
    const int   default_BROKER_PORT = 1883;
    ```
 
-2. Se você usar outro broker (Mosquitto local, por exemplo), altere esses valores para o IP/host e porta corretos e certifique-se de que o Node‑RED consegue acessar o mesmo broker.[web:363][web:372]  
+2. Se você usar outro broker (Mosquitto local, por exemplo), altere esses valores para o IP/host e porta corretos e certifique-se de que o Node‑RED consegue acessar o mesmo broker.
 
 ### 3. Rodar o ESP32 no Wokwi
 
-1. Clique em **Start** no Wokwi para iniciar a simulação.[web:347][web:360]  
-2. Observe o monitor serial para mensagens de inicialização, conexão ao Wi‑Fi e ao broker MQTT.[web:347][web:348]  
-3. Após conectado, o ESP32 começa a ler DHT22 e luminosidade e a publicar nos tópicos configurados, incluindo o JSON em `/lifonix/workwell/env`.[web:347][web:374]  
+1. Clique em **Start** no Wokwi para iniciar a simulação.
+2. Observe o monitor serial para mensagens de inicialização, conexão ao Wi‑Fi e ao broker MQTT.
+3. Após conectado, o ESP32 começa a ler DHT22 e luminosidade e a publicar nos tópicos configurados, incluindo o JSON em `/lifonix/workwell/env`. 
 
 ### 4. Conectar Node‑RED ao broker e aos tópicos
 
@@ -288,54 +286,54 @@ Com esse fluxo, o GreenHub pode chamar `GET /dadosGreenHub` (apontando para o No
    node-red
    ```  
 
-2. Acesse o editor em `http://localhost:1880`.[web:368][web:373]  
-3. Adicione um **nó MQTT in** e configure o mesmo broker/porta do ESP32.[web:290][web:348]  
+2. Acesse o editor em `http://localhost:1880`.
+3. Adicione um **nó MQTT in** e configure o mesmo broker/porta do ESP32.
 4. Assine o tópico principal de ambiente:  
 
-   - `/lifonix/workwell/env`.[web:347][web:353]  
+   - `/lifonix/workwell/env`.
 
-5. Conecte o nó MQTT ao fluxo de ingestão (JSON → Calcula estresse → dados.json / Ponto).[web:290][web:382]  
-6. Clique em **Deploy** e confirme que o nó MQTT está “connected”.[web:290][web:370]  
+5. Conecte o nó MQTT ao fluxo de ingestão (JSON → Calcula estresse → dados.json / Ponto).
+6. Clique em **Deploy** e confirme que o nó MQTT está “connected”. 
 
 ### 5. (Opcional) Criar dashboard Node‑RED
 
-1. Garanta que o `node-red-dashboard` esteja instalado/ativado.[web:292][web:375]  
+1. Garanta que o `node-red-dashboard` esteja instalado/ativado.
 2. Crie um **tab** e um **group** para o WorkWell.  
-3. Adicione componentes de dashboard (gauge, chart) conectados ao nó `Ponto (time,temp,umid,lum,stress)` ou diretamente ao JSON já processado.[web:382][web:356]  
-4. Acesse `http://localhost:1880/ui` para ver os dados em tempo real.[web:294][web:356]  
+3. Adicione componentes de dashboard (gauge, chart) conectados ao nó `Ponto (time,temp,umid,lum,stress)` ou diretamente ao JSON já processado. 
+4. Acesse `http://localhost:1880/ui` para ver os dados em tempo real.
 
 ### 6. Enviar comandos para o WorkWell (ligar/desligar saída)
 
-1. Crie um nó **MQTT out** apontando para o tópico `/lifonix/workwell/cmd`.[web:290][web:348]  
+1. Crie um nó **MQTT out** apontando para o tópico `/lifonix/workwell/cmd`.
 2. Conecte-nos a dois nós `inject`:  
    - Payload `workwell@on|` → liga saída.  
-   - Payload `workwell@off|` → desliga saída.[web:290][web:375]  
-3. Faça deploy e clique nos injects para enviar os comandos; veja o estado mudar no monitor serial e na saída D4.[web:347][web:348]  
+   - Payload `workwell@off|` → desliga saída.  
+3. Faça deploy e clique nos injects para enviar os comandos; veja o estado mudar no monitor serial e na saída D4. 
 
 ### 7. Integrar com dashboard React (WorkWell / GreenHub)
 
-1. No Node‑RED, use o bloco **API /dadosGreenHub** (HTTP in) ligado ao fluxo `Ler dados.json` → `Linhas → Array JSON` → `Resposta JSON` para expor o histórico pelo endpoint `/dadosGreenHub`.[web:290][web:368]  
-2. Na dashboard React (WorkWell ou `Dashboard.jsx` do GreenHub), use Axios ou fetch para consumir esse endpoint periodicamente e atualizar os gráficos.[web:294][web:256]  
-3. Assim, a mesma simulação do Wokwi alimenta tanto o Node‑RED quanto a interface React da solução WorkWell.[web:348][web:373]  
+1. No Node‑RED, use o bloco **API /dadosGreenHub** (HTTP in) ligado ao fluxo `Ler dados.json` → `Linhas → Array JSON` → `Resposta JSON` para expor o histórico pelo endpoint `/dadosGreenHub`. 
+2. Na dashboard React (WorkWell ou `Dashboard.jsx` do GreenHub), use Axios ou fetch para consumir esse endpoint periodicamente e atualizar os gráficos.
+3. Assim, a mesma simulação do Wokwi alimenta tanto o Node‑RED quanto a interface React da solução WorkWell.
 
 ---
 
 ## 🔗 Conexão entre GreenHub e WorkWell
 
-- GreenHub é a **fachada web** que usuários acessam para visualizar perfis, histórias, valores e, futuramente, dados agregados de bem-estar.[web:309][web:320]  
-- WorkWell complementa com uma vertente **IoT de bem-estar**, monitorando condições ambientais e, em versões futuras, indicadores mais diretos de estresse.[web:295][web:298]  
-- A página `Dashboard.jsx` do GreenHub pode funcionar como porta de entrada visual para os dados do WorkWell (por exemplo, embutindo o dashboard WorkWell ou consumindo a API `/dadosGreenHub`).[web:294][web:303]  
+- GreenHub é a **fachada web** que usuários acessam para visualizar perfis, histórias, valores e, futuramente, dados agregados de bem-estar.
+- WorkWell complementa com uma vertente **IoT de bem-estar**, monitorando condições ambientais e, em versões futuras, indicadores mais diretos de estresse.
+- A página `Dashboard.jsx` do GreenHub pode funcionar como porta de entrada visual para os dados do WorkWell (por exemplo, embutindo o dashboard WorkWell ou consumindo a API `/dadosGreenHub`).
 
-Essa integração fortalece a narrativa de uma solução completa para o futuro do trabalho: **talentos + empresas + bem-estar monitorado**.[web:295][web:304]  
+Essa integração fortalece a narrativa de uma solução completa para o futuro do trabalho: **talentos + empresas + bem-estar monitorado**.
 
 ---
 
 ## 🧪 Testes e validação
 
-- Testes manuais no GreenHub.[web:315][web:318]  
+- Testes manuais no GreenHub.
   - Carregamento da Home, filtros, modais e alternância de tema.  
   - Consumo da API de `profiles.json` e `recomendados.json`.  
-- Testes do WorkWell.[web:347][web:351]  
+- Testes do WorkWell.
   - Simulação no Wokwi com envio de dados e recepção de comandos.  
   - Assinatura dos tópicos MQTT por Node-RED e verificação em gráfico ou debug.  
   - Verificação do endpoint `/dadosGreenHub` servindo o JSON para o frontend.  
@@ -348,9 +346,6 @@ Essa integração fortalece a narrativa de uma solução completa para o futuro 
 - Arthur Serrano Veloso – RM 561542  
 - Hyann dos Santos Espindas – RM 563421  
 
----
 
 
 
-[1](https://flowfuse.com/blog/2024/11/esp32-with-node-red/)
-[2](https://binnes.github.io/esp8266Workshop/part3/DASHBOARD.html)
