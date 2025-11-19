@@ -509,7 +509,7 @@ Foto da simulação
 2. Acesse o editor em `http://localhost:1880`.
 3. Adicione um nó **MQTT in** e configure o mesmo broker/porta do ESP32.
 4. Importe o JSON fornecido acima do fluxo do Node-Red, ele ficara assim:
-5. 
+   
 <img width="1614" height="641" alt="Node-Red-Circuito" src="https://github.com/user-attachments/assets/dd9bf8c8-1917-4c00-9cc9-e3e0091e4dc1" />
 
    - `/lifonix/workwell/env`
