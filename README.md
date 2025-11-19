@@ -459,6 +459,9 @@ Fluxo JSON do WorkWell (Node‑RED):
 ]
 ```
 
+<img width="1614" height="641" alt="Node-Red-Circuito" src="https://github.com/user-attachments/assets/dfe7248e-8581-4458-b050-e28cfcbe3177" />
+
+
 ***
 
 ## 🚀 Passo a passo para rodar o IoT WorkWell
