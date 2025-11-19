@@ -458,6 +458,7 @@ Fluxo JSON do WorkWell (Node‑RED):
   }
 ]
 ```
+O fluxo deve ficar assim.
 
 <img width="1614" height="641" alt="Node-Red-Circuito" src="https://github.com/user-attachments/assets/dfe7248e-8581-4458-b050-e28cfcbe3177" />
 
@@ -467,6 +468,10 @@ Fluxo JSON do WorkWell (Node‑RED):
 ## 🚀 Passo a passo para rodar o IoT WorkWell
 
 ### 1. Abrir a simulação no Wokwi
+
+Foto da simulação
+<img width="929" height="733" alt="wokwicircuito" src="https://github.com/user-attachments/assets/ebe9ab81-6b0b-4f64-83ec-b686d9aed126" />
+
 
 1. Acesse o projeto Wokwi do WorkWell:  
    `https://wokwi.com/projects/447651098360541185`.
