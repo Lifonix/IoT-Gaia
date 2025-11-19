@@ -504,25 +504,15 @@ Foto da simulação
 
 2. Acesse o editor em `http://localhost:1880`.
 3. Adicione um nó **MQTT in** e configure o mesmo broker/porta do ESP32.
-4. Assine o tópico principal de ambiente:
+4. Importe o JSON fornecido acima do fluxo do Node-Red, ele ficara assim:
+5. 
+<img width="1614" height="641" alt="Node-Red-Circuito" src="https://github.com/user-attachments/assets/dd9bf8c8-1917-4c00-9cc9-e3e0091e4dc1" />
 
    - `/lifonix/workwell/env`
 
-5. Conecte o nó MQTT ao fluxo de ingestão (JSON → Calcula estresse → dados.json / Ponto).
-6. Clique em **Deploy** e confirme que o nó MQTT está “connected”.
+5. De o deploy no fluxo.
+6. Abra o site da GreenHub
 
-### 5. Importar dashboard dar deploy no Node‑RED
-
-<img width="1614" height="641" alt="Node-Red-Circuito" src="https://github.com/user-attachments/assets/dd9bf8c8-1917-4c00-9cc9-e3e0091e4dc1" />
-
-
-
-1. Garanta que o `node-red-dashboard` esteja instalado/ativado.
-2. Crie um **tab** e um **group** para o WorkWell.
-3. Adicione componentes de dashboard (gauge, chart) conectados ao nó `Ponto (time,temp,umid,lum,stress)` ou diretamente ao JSON já processado.
-4. Acesse `http://localhost:1880/ui` para ver os dados em tempo real.
-
-.
 ***
 
 ## 🔗 Conexão entre GreenHub e WorkWell
