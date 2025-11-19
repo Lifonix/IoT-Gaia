@@ -15,12 +15,16 @@ Juntos, GreenHub e WorkWell formam um ecossistema que conecta pessoas, tecnologi
 
 ### GreenHub (site e API)
 
+Link do repositorio: https://github.com/Lifonix/GreenHub.git
+
 - Aplicação SPA em React no diretório `frontend/`, com páginas como Home, Dashboard, Empresas, Cadastro de Empresas, About e Notícias Ambientais.
 - Backend Node/Express simples em `backend/`, servindo dados de profissionais e recomendados a partir de arquivos JSON.
 - Tela inicial com hero, botões de ação, lista de profissionais com filtros e seções institucionais (Trending Skills, Valores, Métricas da Comunidade, Histórias).
 - Suporte a modo claro/escuro controlado na Home.
 
 ### WorkWell (IoT + bem-estar)
+
+Link do repositorio: 
 
 - Dispositivo com ESP32 coleta dados de sensores (ex.: temperatura, umidade e luminosidade) como proxies para condições de estresse.
 - Broker MQTT recebe e encaminha mensagens usando tópicos dedicados ao WorkWell.
