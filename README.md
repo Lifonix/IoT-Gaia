@@ -177,7 +177,7 @@ Camadas previstas:
 O firmware do WorkWell pode ser testado sem hardware físico usando o simulador online **Wokwi**.
 
 - Projeto de simulação do ESP32 + DHT22 + MQTT do WorkWell:  
-  `https://wokwi.com/projects/447651098360541185`.
+  `https://wokwi.com/projects/448022081988762625`.
 
 No projeto Wokwi, o ESP32:
 
@@ -481,7 +481,7 @@ Foto da simulação
 
 
 1. Acesse o projeto Wokwi do WorkWell:  
-   `https://wokwi.com/projects/447651098360541185`.
+   `https://wokwi.com/projects/448022081988762625`.
 2. Confira no código:
    - Conexão com `Wokwi-GUEST`.
    - Uso de `WiFi.h`, `PubSubClient.h` e `DHT.h`.
