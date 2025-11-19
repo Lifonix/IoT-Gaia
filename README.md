@@ -1,4 +1,3 @@
-"***
 
 # GreenHub & WorkWell – Plataforma Web + Sistema IoT de Bem-Estar no Trabalho.
 
