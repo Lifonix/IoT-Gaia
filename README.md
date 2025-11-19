@@ -513,7 +513,8 @@ Foto da simulação
 
 ### 5. Importar dashboard dar deploy no Node‑RED
 
-![Uploading Node-Red-Circuito.PNG…]()
+<img width="1614" height="641" alt="Node-Red-Circuito" src="https://github.com/user-attachments/assets/dd9bf8c8-1917-4c00-9cc9-e3e0091e4dc1" />
+
 
 
 1. Garanta que o `node-red-dashboard` esteja instalado/ativado.
