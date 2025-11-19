@@ -548,6 +548,10 @@ Essa integração fortalece a narrativa de uma solução completa para o futuro 
 
 ***
 
+## Link do video:
+
+https://youtu.be/TcRKw3Z6CBc 
+
 ## 👥 Equipe
 
 - Arthur Serrano Veloso – RM 561542
