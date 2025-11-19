@@ -24,7 +24,7 @@ Link do repositorio: https://github.com/Lifonix/GreenHub.git
 
 ### WorkWell (IoT + bem-estar)
 
-Link do repositorio: 
+Link do repositorio: https://github.com/Lifonix/IoT-Lifonix.git
 
 - Dispositivo com ESP32 coleta dados de sensores (ex.: temperatura, umidade e luminosidade) como proxies para condições de estresse.
 - Broker MQTT recebe e encaminha mensagens usando tópicos dedicados ao WorkWell.
