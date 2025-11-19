@@ -1,4 +1,5 @@
 
+
 # GreenHub & WorkWell – Plataforma Web + Sistema IoT de Bem-Estar no Trabalho.
 
 Este repositório reúne dois pilares de uma mesma solução para o futuro do trabalho.
