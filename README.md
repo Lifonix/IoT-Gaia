@@ -13,7 +13,7 @@ Juntos, GreenHub e WorkWell formam um ecossistema que conecta pessoas, tecnologi
 
 ## Problema
 
-Problema
+
 
 As empresas e profissionais ainda têm dificuldade em monitorar, de forma contínua e orientada por dados, as condições reais de bem-estar no trabalho e em conectar isso a oportunidades de carreira alinhadas a propósito e sustentabilidade. Faltam ferramentas integradas que coletem dados ambientais, traduzam essas informações em indicadores de estresse e qualidade de vida e, ao mesmo tempo, aproximem talentos e organizações comprometidas com um futuro do trabalho mais saudável, humano e sustentável.
 
